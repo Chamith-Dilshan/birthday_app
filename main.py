@@ -11,6 +11,10 @@ from PySide6.QtGui import (
 )
 from PySide6.QtCore import Qt, QTimer, QPoint, QRect
 
+from gallery_page.button_widget import ButtonWidget
+from gallery_page.camera_widget import CameraWidget
+from gallery_page.image_scroll_widget import ImageScrollWidget
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -93,163 +97,162 @@ class ScrollPageWidget(QWidget):
         super().__init__()
         self.main_window = main_window
         self.setStyleSheet("background-color: #121212;")
-        self.init_ui()
 
-    def init_ui(self):
-        self.scroll = QScrollArea()
-        self.scroll.setWidgetResizable(True)
-        self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        layout = QVBoxLayout()
+        self.camera = CameraWidget()
+        self.scroll = ImageScrollWidget()
+        self.button = ButtonWidget(self.main_window)
 
-        container = QWidget()
-        container.setStyleSheet("background-color: #121212;")
-        container_layout = QVBoxLayout()
-        container_layout.setContentsMargins(20, 20, 20, 40)
-        container_layout.setSpacing(40)
+        layout.addWidget(self.camera)
+        layout.addWidget(self.scroll)
+        layout.addWidget(self.button)
+        self.setLayout(layout)
 
-        # Add retro camera header
-        if os.path.exists("assets/retro_camera.png"):
-            camera_label = QLabel()
-            camera_pixmap = QPixmap("assets/retro_camera.png")
-            camera_label.setPixmap(camera_pixmap.scaledToWidth(250, Qt.SmoothTransformation))
-            camera_label.setAlignment(Qt.AlignCenter)
-            container_layout.addWidget(camera_label)
 
-        # Add photo frames
-        self.image_paths = [f"assets/img{i}.png" for i in range(1, 6) if os.path.exists(f"assets/img{i}.png")]
-        for path in self.image_paths:
-            frame = self.create_photo_frame(path)
-            container_layout.addWidget(frame)
 
-        # Add celebration button
-        self.button = QPushButton("UNLEASH CELEBRATION")
-        self.button.setStyleSheet("""
-            QPushButton {
-                background-color: #FF00FF;
-                color: white;
-                font-size: 18px;
-                padding: 12px 24px;
-                border-radius: 8px;
-                font-family: 'Courier New';
-                border: 2px solid #00FF90;
-            }
-            QPushButton:hover {
-                background-color: #00FF90;
-                color: black;
-            }
-        """)
-        self.button.clicked.connect(self.start_celebration)
-        container_layout.addWidget(self.button, alignment=Qt.AlignCenter)
+# class ScrollPageWidget(QWidget):
+#     def __init__(self, main_window):
+#         super().__init__()
+#         self.main_window = main_window
+#         self.setStyleSheet("background-color: #121212;")
+#         self.init_ui()
 
-        container.setLayout(container_layout)
-        self.scroll.setWidget(container)
+#     def init_ui(self):
+#         self.scroll = QScrollArea()
+#         self.scroll.setWidgetResizable(True)
+#         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        main_layout = QVBoxLayout(self)
-        main_layout.addWidget(self.scroll)
-        self.setLayout(main_layout)
+#         container = QWidget()
+#         container.setStyleSheet("background-color: #121212;")
+#         container_layout = QVBoxLayout()
+#         container_layout.setContentsMargins(20, 20, 20, 40)
+#         container_layout.setSpacing(40)
 
-    def create_photo_frame(self, image_path):
-        # Create a container widget
-        container = QWidget()
-        container.setStyleSheet("background: transparent;")
-        layout = QVBoxLayout(container)
-        layout.setContentsMargins(50, 20, 50, 20)
+#         # Add retro camera header
+#         if os.path.exists("assets/retro_camera.png"):
+#             camera_label = QLabel()
+#             camera_pixmap = QPixmap("assets/retro_camera.png")
+#             camera_label.setPixmap(camera_pixmap.scaledToWidth(250, Qt.SmoothTransformation))
+#             camera_label.setAlignment(Qt.AlignCenter)
+#             container_layout.addWidget(camera_label)
+
+#         # Add photo frames
+#         self.image_paths = [f"assets/img{i}.png" for i in range(1, 6) if os.path.exists(f"assets/img{i}.png")]
+#         for path in self.image_paths:
+#             frame = self.create_photo_frame(path)
+#             container_layout.addWidget(frame)
+
+#         # Add celebration button
+#         self.button = QPushButton("UNLEASH CELEBRATION")
+#         self.button.setStyleSheet("""
+#             QPushButton {
+#                 background-color: #FF00FF;
+#                 color: white;
+#                 font-size: 18px;
+#                 padding: 12px 24px;
+#                 border-radius: 8px;
+#                 font-family: 'Courier New';
+#                 border: 2px solid #00FF90;
+#             }
+#             QPushButton:hover {
+#                 background-color: #00FF90;
+#                 color: black;
+#             }
+#         """)
+#         self.button.clicked.connect(self.start_celebration)
+#         container_layout.addWidget(self.button, alignment=Qt.AlignCenter)
+
+#         container.setLayout(container_layout)
+#         self.scroll.setWidget(container)
+
+#         main_layout = QVBoxLayout(self)
+#         main_layout.addWidget(self.scroll)
+#         self.setLayout(main_layout)
+
+#     def create_photo_frame(self, image_path):
+#         # Create a container widget
+#         container = QWidget()
+#         container.setStyleSheet("background: transparent;")
+#         layout = QVBoxLayout(container)
+#         layout.setContentsMargins(50, 20, 50, 20)
     
-        # Create graphics view
-        graphics_view = QGraphicsView()
-        graphics_view.setStyleSheet("background: transparent; border: none;")
-        graphics_view.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
-        graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+#         # Create graphics view
+#         graphics_view = QGraphicsView()
+#         graphics_view.setStyleSheet("background: transparent; border: none;")
+#         graphics_view.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+#         graphics_view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+#         graphics_view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     
-        # Create scene
-        scene = QGraphicsScene()
-        graphics_view.setScene(scene)
+#         # Create scene
+#         scene = QGraphicsScene()
+#         graphics_view.setScene(scene)
     
-        # Create frame item
-        frame_item = QGraphicsRectItem(0, 0, 700, 500)
-        frame_item.setBrush(QBrush(QColor("#f0f0f0")))
-        frame_item.setPen(QPen(QColor("#d8d8d8"), 15))
-        scene.addItem(frame_item)
+#         # Create frame item
+#         frame_item = QGraphicsRectItem(0, 0, 700, 500)
+#         frame_item.setBrush(QBrush(QColor("#f0f0f0")))
+#         frame_item.setPen(QPen(QColor("#d8d8d8"), 15))
+#         scene.addItem(frame_item)
     
-        # Create photo item
-        pixmap = QPixmap(image_path).scaled(650, 450, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        photo_item = QGraphicsPixmapItem(pixmap)
-        photo_item.setPos(25, 25)
-        scene.addItem(photo_item)
+#         # Create photo item
+#         pixmap = QPixmap(image_path).scaled(650, 450, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+#         photo_item = QGraphicsPixmapItem(pixmap)
+#         photo_item.setPos(25, 25)
+#         scene.addItem(photo_item)
     
-        # Apply rotation
-        angle = random.uniform(-1.5, 1.5)
-        frame_item.setRotation(angle)
-        photo_item.setRotation(angle)
+#         # Apply rotation
+#         angle = random.uniform(-1.5, 1.5)
+#         frame_item.setRotation(angle)
+#         photo_item.setRotation(angle)
     
-        # Add footer text
-        footer_text = QGraphicsTextItem("■ 1999-07-20   ✦ ★ ✦")
-        footer_text.setDefaultTextColor(QColor("#505050"))
-        footer_text.setFont(QFont("Courier New", 12))
-        footer_text.setPos(30, 480)
-        scene.addItem(footer_text)
+#         # Add footer text
+#         footer_text = QGraphicsTextItem("■ 1999-07-20   ✦ ★ ✦")
+#         footer_text.setDefaultTextColor(QColor("#505050"))
+#         footer_text.setFont(QFont("Courier New", 12))
+#         footer_text.setPos(30, 480)
+#         scene.addItem(footer_text)
     
-        # Set scene rect
-        scene.setSceneRect(scene.itemsBoundingRect())
+#         # Set scene rect
+#         scene.setSceneRect(scene.itemsBoundingRect())
     
-        layout.addWidget(graphics_view)
-        return container
+#         layout.addWidget(graphics_view)
+#         return container
 
-    def start_celebration(self):
-        self.spawn_count = 0
-        self.popup_total = 40
-        self.popup_windows = []
-        self.spawn_timer = QTimer()
-        self.spawn_timer.timeout.connect(self.spawn_one_popup)
-        self.spawn_timer.start(100)
+    # def start_celebration(self):
+    #     self.spawn_count = 0
+    #     self.popup_total = 40
+    #     self.popup_windows = []
+    #     self.spawn_timer = QTimer()
+    #     self.spawn_timer.timeout.connect(self.spawn_one_popup)
+    #     self.spawn_timer.start(100)
 
-    # Rest of the celebration popup methods remain the same...
+    # # Rest of the celebration popup methods remain the same...
 
-    def spawn_one_popup(self):
-        if self.spawn_count >= self.popup_total:
-            self.spawn_timer.stop()
-            return
+    # def spawn_one_popup(self):
+    #     if self.spawn_count >= self.popup_total:
+    #         self.spawn_timer.stop()
+    #         return
 
-        screen = QApplication.primaryScreen()
-        geo = screen.availableGeometry()
+    #     screen = QApplication.primaryScreen()
+    #     geo = screen.availableGeometry()
 
-        popup = PopupWindow(self.main_window, self)
-        x = random.randint(geo.left(), geo.right() - 200)
-        y = random.randint(geo.top(), geo.bottom() - 100)
-        popup.move(QPoint(x, y))
-        popup.show()
-        self.popup_windows.append(popup)
-        self.spawn_count += 1
+    #     popup = PopupWindow(self.main_window, self)
+    #     x = random.randint(geo.left(), geo.right() - 200)
+    #     y = random.randint(geo.top(), geo.bottom() - 100)
+    #     popup.move(QPoint(x, y))
+    #     popup.show()
+    #     self.popup_windows.append(popup)
+    #     self.spawn_count += 1
 
-    def close_all_popups(self):
-        self.close_timer.start(100)
+    # def close_all_popups(self):
+    #     self.close_timer.start(100)
 
-    def close_one_popup(self):
-        if not self.popup_windows:
-            self.close_timer.stop()
-            self.main_window.show_final_message()
-            return
-        popup = self.popup_windows.pop()
-        popup.close()
-
-
-class PopupWindow(QWidget):
-    def __init__(self, main_window, controller):
-        super().__init__()
-        self.main_window = main_window
-        self.controller = controller
-        self.setWindowFlags(Qt.WindowStaysOnTopHint)
-        self.setFixedSize(200, 100)
-        self.setStyleSheet("background-color: #000; border: 2px solid #00FF90;")
-
-        label = QLabel("\ud83c\udf89 HAPPY BIRTHDAY JULIEN!", self)
-        label.setStyleSheet("color: #FFFF33;")
-        label.setFont(QFont("Courier New", 10))
-        label.setAlignment(Qt.AlignCenter)
-        label.setGeometry(QRect(0, 30, 200, 50))
-
-    def closeEvent(self, event):
-        self.controller.close_all_popups()
+    # def close_one_popup(self):
+    #     if not self.popup_windows:
+    #         self.close_timer.stop()
+    #         self.main_window.show_final_message()
+    #         return
+    #     popup = self.popup_windows.pop()
+    #     popup.close()
 
 
 class FinalMessagePage(QWidget):
